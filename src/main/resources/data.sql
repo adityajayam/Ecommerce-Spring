@@ -1,1 +1,7 @@
-insert into product (brand, category, description, is_available, name, price, quantity, id) values ('Sony', 'TV', 'Flat screen Television', true, 'Sony TV', 59999, 10, default)
+insert into product (brand, category, description, is_available, name, price, quantity, release_date,id) values ('Sony', 'TV', 'Flat screen Television', true, 'Sony TV', 59999, 10,'2024-06-24 12:34:56', default)
+insert into product (brand, category, description, is_available, name, price, quantity, release_date,id) values ('Sony', 'Mobile', 'xperia smart phone', true, 'Sony Xperia', 79999, 6,'2024-03-20 01:31:56', default)
+insert into product (brand, category, description, is_available, name, price, quantity, release_date,id) values ('Google', 'Mobile', 'Pixel mobile phone', true, 'Pixel 7', 49999, 100,'2024-06-24 12:34:56', default)
+insert into product (brand, category, description, is_available, name, price, quantity, release_date,id) values ('Sony', 'TV', 'Flat screen Television', true, 'Sony Bravia', 129999, 10,'2024-06-24 12:34:56', default)
+insert into product (brand, category, description, is_available, name, price, quantity, release_date,id) values ('Google', 'Mobile', 'Pixel mobile phone', true, 'Pixel 9', 79999, 13,'2024-06-24 12:34:56', default)
+insert into product (brand, category, description, is_available, name, price, quantity, release_date,id) values ('Apple', 'Mobile', 'Iphone 256GB', true, 'Iphone 9', 69999, 102,'2024-06-24 12:34:56', default)
+insert into product (brand, category, description, is_available, name, price, quantity, release_date,id) values ('Apple', 'Mobile', 'Iphone SE 256 GB', true, 'Iphone SE', 49999, 10,'2024-06-24 12:34:56', default)

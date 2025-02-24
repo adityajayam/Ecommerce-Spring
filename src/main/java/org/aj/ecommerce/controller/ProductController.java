@@ -4,8 +4,10 @@ import org.aj.ecommerce.model.Product;
 import org.aj.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,30 +18,81 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/products")
+    @GetMapping("/product")
     public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        System.out.println(products.get(0).getName() + " " + products.get(0).getPrice() + " " + products.get(0).getQuantity() + " " + products.get(0).getDescription());
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
     @GetMapping("/product/{productId}")
-    public Product getProductById(@PathVariable int productId) {
-        return productService.getProductById(productId);
+    public ResponseEntity<Product> getProductById(@PathVariable int productId) {
+        if (productService.getProductById(productId) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(productService.getProductById(productId), HttpStatus.OK);
     }
 
     @PostMapping("/product")
-    public Product addProduct(@RequestBody Product product) {
-        return productService.addProduct(product);
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        try {
+            Product prod = productService.addProduct(product, null);
+            return new ResponseEntity<>(prod, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @PutMapping("/product")
-    public Product updateProduct(@RequestBody Product product) {
-        return productService.updateProduct(product);
+    @PostMapping("/product/{productId}/image")
+    public ResponseEntity<Product> addProductImage(@PathVariable int productId, @RequestParam("image") MultipartFile imageFile) {
+        Product product = productService.getProductById(productId);
+        try {
+            if (product == null) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(productService.addProduct(product, imageFile), HttpStatus.CREATED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/product/{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable int productId, @RequestPart Product product, @RequestParam("image") MultipartFile imageFile) {
+        Product pro = productService.getProductById(productId);
+        if (pro == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            try {
+                return new ResponseEntity<>(productService.updateProduct(product, imageFile), HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 
     @DeleteMapping("/product")
-    public void deleteProduct(int productId) {
-        productService.deleteProduct(productId);
+    public ResponseEntity<Object> deleteProduct(int productId) {
+        Product pro = productService.getProductById(productId);
+        if (pro == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            productService.deleteProduct(productId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/product/{productId}/image")
+    public ResponseEntity<byte[]> getProductImage(@PathVariable int productId) {
+        Product product = productService.getProductById(productId);
+        if (product == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return ResponseEntity.ok().contentType(MediaType.valueOf(product.getImageType())).body(product.getImage());
+        }
+    }
+
+    @GetMapping("/product/search")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword) {
+        System.out.println(keyword);
+        return new ResponseEntity<>(productService.searchProducts(keyword), HttpStatus.OK);
     }
 }
